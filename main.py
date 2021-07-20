@@ -16,7 +16,6 @@ import linecache
 import os
 import tracemalloc
 
-
 # ... run your application ...
 ws = wb.create_sheet()
 
@@ -31,7 +30,7 @@ def random_chinese():
 ws.column_dimensions["B"].width = 60
 
 print_rss()
-for row_index in range(100):
+for row_index in range(10000):
 
     values = []
     values.extend(random() for _ in range(10))
@@ -39,6 +38,7 @@ for row_index in range(100):
     cell = WriteOnlyCell(ws, value="hello world")
     cell.fill = PatternFill(fgColor=Color("000000FF"), patternType='solid')
     ws.append(values+[cell])
+    print_rss()
 
 file = io.BytesIO()
 print_rss()
