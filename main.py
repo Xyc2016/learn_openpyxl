@@ -16,16 +16,26 @@ from openpyxl.styles import Font
 from zipfile import ZipFile
 import os
 print(os.getpid())
-wb = Workbook(write_only=True)
+
+write_only = True
+wb = Workbook(
+        write_only=write_only
+    )
+if write_only:
+    ws = wb.create_sheet()
+else:
+    ws = wb.active
+
+print(wb.write_only)
 faker = Faker()
 
 
 def print_peak_rss(prefix: str = ""):
-    print(f"{prefix}: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024/1024=}")
+    print(f"{prefix}:resource= {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024/1024}")
 
 
 # ... run your application ...
-ws = wb.create_sheet()
+
 
 process = psutil.Process(os.getpid())
 
@@ -43,17 +53,18 @@ def random_chinese():
 
 print_rss()
 print_peak_rss()
-singleton_s = "abcdefghijklmnopqrstuvwxyz" * 100
-for row_index in range(50):
+singleton_s = "abcdefghijklmnopqrstuvwxyz"
+l1 = [singleton_s] * 10
+l = [1,2,3,4,5,6,7]
+for row_index in range(3000):
 
     values = []
-    values.extend(singleton_s)
-    cell = WriteOnlyCell(ws, value="hello world")
-    cell.fill = PatternFill(fgColor=Color("000000FF"), patternType='solid')
-    ws.append(values + [cell])
-    time.sleep(0.01)
-    print_rss("in progress current")
-    print_peak_rss("in progress")
+    values.extend(l1)
+    values.extend(l)
+    ws.append(values)
+    # time.sleep(0.01)
+    # print_rss("in progress current")
+    # print_peak_rss("in progress")
 
 print_peak_rss()
 file = io.BytesIO()
@@ -61,8 +72,14 @@ gc.collect()
 print_rss("before save")
 wb.save(file)
 print_rss("after save")
+print_peak_rss("after all")
+
 file.seek(0)
 with open("a.xlsx", "wb") as file1:
     file1.write(file.read())
 
-print_peak_rss()
+
+from openpyxl import load_workbook
+
+wb = load_workbook("", read_only=True)
+wb.active.cell(1,1)
